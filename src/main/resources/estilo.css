@@ -1,0 +1,270 @@
+/* Estilo da aplicação: azul-marinho e azul do logótipo, "cartão" de orçamento sobre fundo claro. */
+
+.root {
+    -cor-navy: #13263A;
+    -cor-azul: #1F6DB5;
+    -cor-azul-escuro: #185a96;
+    -cor-fundo: #DDE3E9;
+    -cor-borda: #d5dbe6;
+    -cor-texto: #1f2937;
+    -cor-suave: #6b7280;
+    -fx-font-family: "Montserrat", "Segoe UI", "Arial";
+    -fx-font-size: 13px;
+    -fx-background-color: -cor-fundo;
+    -fx-text-fill: -cor-texto;
+}
+
+/* ---------- Barra superior ---------- */
+.barra {
+    -fx-background-color: -cor-navy;
+    -fx-padding: 0 20 0 20;
+    -fx-min-height: 52;
+    -fx-pref-height: 52;
+    -fx-alignment: center-left;
+    -fx-spacing: 4;
+}
+.barra-marca {
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-padding: 0 28 0 0;
+}
+.barra-utilizador { -fx-text-fill: #c9d3e6; -fx-padding: 0 12 0 0; }
+.nav-botao {
+    -fx-background-color: transparent;
+    -fx-text-fill: #c9d3e6;
+    -fx-padding: 17 16 14 16;
+    -fx-background-radius: 0;
+    -fx-cursor: hand;
+    -fx-border-color: transparent;
+    -fx-border-width: 0 0 3 0;
+}
+.nav-botao:hover { -fx-text-fill: white; }
+.nav-botao:selected {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-border-color: transparent transparent -cor-azul transparent;
+}
+.botao-barra {
+    -fx-background-color: transparent;
+    -fx-text-fill: #c9d3e6;
+    -fx-border-color: #4a5778;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-cursor: hand;
+}
+.botao-barra:hover { -fx-text-fill: white; -fx-border-color: white; }
+
+/* ---------- Páginas e cartões ---------- */
+.pagina { -fx-padding: 24; -fx-spacing: 16; }
+.ecra, .ecra > .viewport { -fx-background-color: transparent; }
+.ecra { -fx-background-insets: 0; -fx-padding: 0; }
+
+.titulo-pagina { -fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: -cor-navy; }
+.subtitulo { -fx-text-fill: -cor-suave; }
+.numero { -fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: -cor-azul-escuro; }
+
+.cartao {
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-border-color: -cor-borda;
+    -fx-border-radius: 10;
+    -fx-effect: dropshadow(gaussian, rgba(27, 37, 64, 0.08), 12, 0, 0, 2);
+}
+.papel { -fx-padding: 28; }
+
+.seccao-titulo { -fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: -cor-suave; }
+.rotulo { -fx-text-fill: -cor-suave; -fx-font-size: 12px; }
+.separador-suave .line { -fx-border-color: -cor-borda; }
+.erro { -fx-text-fill: #b42318; }
+
+/* ---------- Botões ---------- */
+.botao-primario {
+    -fx-background-color: -cor-azul;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 6;
+    -fx-padding: 8 16 8 16;
+    -fx-cursor: hand;
+}
+.botao-primario:hover { -fx-background-color: -cor-azul-escuro; }
+.botao-primario:disabled { -fx-opacity: 0.5; }
+.botao-secundario {
+    -fx-background-color: white;
+    -fx-text-fill: -cor-texto;
+    -fx-border-color: -cor-borda;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-padding: 7 14 7 14;
+    -fx-cursor: hand;
+}
+.botao-secundario:hover { -fx-border-color: -cor-azul; -fx-text-fill: -cor-azul-escuro; }
+.botao-secundario:disabled { -fx-opacity: 0.5; }
+.botao-perigo {
+    -fx-background-color: transparent;
+    -fx-text-fill: #b42318;
+    -fx-cursor: hand;
+    -fx-padding: 4 8 4 8;
+}
+.botao-perigo:hover { -fx-background-color: #fde8e6; -fx-background-radius: 4; }
+.botao-link {
+    -fx-background-color: transparent;
+    -fx-text-fill: -cor-azul-escuro;
+    -fx-cursor: hand;
+    -fx-padding: 4 0 4 0;
+    -fx-font-weight: bold;
+}
+.botao-link:hover { -fx-underline: true; }
+
+/* ---------- Campos "clique para editar" ---------- */
+.campo-inline {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent transparent -cor-borda transparent;
+    -fx-border-width: 0 0 1 0;
+    -fx-background-radius: 0;
+    -fx-padding: 4 2 4 2;
+}
+.campo-inline:hover { -fx-border-color: transparent transparent #9aa7bd transparent; }
+.campo-inline:focused {
+    -fx-border-color: transparent transparent -cor-azul transparent;
+    -fx-border-width: 0 0 2 0;
+}
+.titulo-capitulo { -fx-font-weight: bold; -fx-font-size: 14px; }
+.campo-inline:disabled { -fx-opacity: 1; -fx-text-fill: -cor-texto; }
+
+/* ---------- Estado ---------- */
+.badge {
+    -fx-padding: 2 10 2 10;
+    -fx-background-radius: 10;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+}
+.estado-rascunho  { -fx-background-color: #eceff4; -fx-text-fill: #4b5563; }
+.estado-emitido   { -fx-background-color: #dbeefa; -fx-text-fill: #0f6a99; }
+.estado-adjudicado{ -fx-background-color: #dcf5e4; -fx-text-fill: #17693a; }
+.estado-recusado  { -fx-background-color: #fdeccf; -fx-text-fill: #8a5a00; }
+.estado-anulado   { -fx-background-color: #fde1de; -fx-text-fill: #a12318; }
+
+.total-grande { -fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: -cor-navy; }
+
+/* ---------- Tabelas ---------- */
+.table-view {
+    -fx-background-color: white;
+    -fx-border-color: -cor-borda;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
+.table-view .column-header-background { -fx-background-color: #f3f5f9; }
+.table-view .column-header, .table-view .filler {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent transparent -cor-borda transparent;
+}
+.table-view .column-header .label {
+    -fx-text-fill: -cor-suave;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+}
+.table-row-cell { -fx-cell-size: 32; }
+/* tabelas do editor: sem linhas vazias no fim */
+.tabela-linhas .table-row-cell:empty { -fx-background-color: transparent; -fx-border-color: transparent; }
+.tabela-linhas .table-row-cell:empty .table-cell { -fx-border-color: transparent; }
+.table-row-cell:selected { -fx-background-color: #dbeefa; }
+.table-row-cell:selected .table-cell { -fx-text-fill: -cor-texto; }
+
+
+/* ================= Editor: folha A4 no estilo do site ================= */
+.mesa, .mesa > .viewport { -fx-background-color: #DDE3E9; }
+.mesa { -fx-background-insets: 0; -fx-padding: 0; }
+.folha-sombra { -fx-effect: dropshadow(gaussian, rgba(19,38,58,0.22), 22, 0, 0, 6); }
+.folha { -fx-background-color: white; -fx-padding: 68 60 68 113; -fx-min-height: 1123; }
+.folha-barra { -fx-background-color: #1F6DB5; }
+.folha-regra { -fx-background-color: #13263A; }
+.folha-h2 { -fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #1F6DB5; }
+.folha-titulo { -fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: #1F6DB5; }
+.folha-empresa-nome { -fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: black; }
+.folha-pequeno { -fx-font-size: 12.5px; -fx-text-fill: black; }
+.folha-cinza { -fx-text-fill: #5B6672; }
+.folha-forte { -fx-font-weight: bold; -fx-font-size: 13.5px; -fx-text-fill: black; }
+.folha-web { -fx-text-fill: #1F6DB5; -fx-font-weight: bold; }
+.folha-rotulo { -fx-text-fill: #5B6672; -fx-font-size: 13.5px; }
+.folha-texto { -fx-font-size: 13.5px; }
+.folha-rodape { -fx-font-size: 11.5px; -fx-text-fill: #5B6672; -fx-padding: 36 0 0 0; }
+
+/* campos "clique para editar" */
+.folha-campo, .folha-campo:disabled {
+    -fx-background-color: transparent;
+    -fx-background-radius: 2;
+    -fx-border-color: transparent;
+    -fx-border-width: 0 0 2 0;
+    -fx-padding: 3 3 3 3;
+    -fx-font-size: 13.5px;
+    -fx-text-fill: black;
+    -fx-prompt-text-fill: #9AA5B1;
+    -fx-opacity: 1;
+    -fx-highlight-fill: #bcd6ee;
+    -fx-highlight-text-fill: black;
+}
+.folha-campo:hover { -fx-background-color: #E8F0F8; }
+.folha-campo:focused { -fx-background-color: #E8F0F8; -fx-border-color: transparent transparent #1F6DB5 transparent; }
+.folha-campo:disabled:hover { -fx-background-color: transparent; }
+.folha-direita { -fx-alignment: center-right; }
+.folha-cliente-nome, .folha-cliente-nome:disabled { -fx-font-size: 22px; -fx-font-weight: bold; }
+.folha-capitulo, .folha-capitulo:disabled { -fx-font-weight: bold; -fx-font-size: 14px; }
+.folha-capitulo-num { -fx-font-weight: bold; -fx-text-fill: #1F6DB5; -fx-font-size: 14px; }
+.folha-desc, .folha-nota { -fx-padding: 0; }
+.folha-desc .scroll-pane, .folha-nota .scroll-pane,
+.folha-desc .viewport, .folha-nota .viewport,
+.folha-desc .content, .folha-nota .content { -fx-background-color: transparent; -fx-padding: 0; }
+.folha-desc .content, .folha-nota .content { -fx-padding: 4 3 2 3; }
+.folha-desc .scroll-bar, .folha-nota .scroll-bar { -fx-opacity: 0; -fx-pref-width: 0; -fx-pref-height: 0; }
+.folha-nota { -fx-text-fill: #13263A; }
+
+/* tabela de serviços */
+.folha-th-linha { -fx-border-color: transparent transparent #13263A transparent; -fx-border-width: 0 0 1 0; -fx-padding: 0 0 8 0; }
+.folha-th { -fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #5B6672; -fx-padding: 0 6 0 6; }
+.folha-linha { -fx-border-color: transparent transparent #E3E8ED transparent; -fx-border-width: 0 0 1 0; -fx-padding: 6 0 6 0; }
+.folha-linha:hover .folha-x { -fx-opacity: 1; }
+.folha-incompleta { -fx-background-color: #FFF8E6; }
+.folha-ponto { -fx-background-color: #1F6DB5; }
+.folha-total-linha { -fx-font-size: 13.5px; -fx-padding: 4 6 0 0; }
+.folha-un, .folha-un .list-cell, .folha-iva, .folha-iva .list-cell, .folha-troca {
+    -fx-background-color: transparent; -fx-font-size: 13.5px; -fx-text-fill: black;
+}
+.folha-un:disabled, .folha-iva:disabled { -fx-opacity: 1; }
+.folha-un:hover, .folha-iva:hover { -fx-background-color: #E8F0F8; }
+.folha-un .arrow-button, .folha-iva .arrow-button { -fx-padding: 0 4 0 0; -fx-opacity: 0.5; }
+.folha-un:disabled .arrow-button, .folha-iva:disabled .arrow-button { -fx-opacity: 0; }
+.folha-x {
+    -fx-background-color: transparent; -fx-text-fill: #5B6672; -fx-font-size: 18px;
+    -fx-padding: 0 6 2 6; -fx-opacity: 0.45; -fx-cursor: hand; -fx-background-radius: 2;
+    -fx-min-width: 26; -fx-pref-width: 26; -fx-min-height: 26; -fx-pref-height: 26;
+}
+.folha-x:hover { -fx-text-fill: #B3261E; -fx-background-color: #FBEAEA; -fx-opacity: 1; }
+.folha-adicionar {
+    -fx-background-color: transparent; -fx-text-fill: #1F6DB5; -fx-font-weight: bold;
+    -fx-border-color: #1F6DB5; -fx-border-style: dashed; -fx-border-width: 1.5; -fx-border-radius: 2;
+    -fx-background-radius: 2; -fx-padding: 8 14 8 14; -fx-cursor: hand;
+}
+.folha-adicionar:hover { -fx-background-color: #E8F0F8; }
+
+/* validade e totais */
+.folha-valido { -fx-font-size: 15px; -fx-font-weight: bold; }
+.folha-data .text-field { -fx-font-weight: bold; -fx-font-size: 13.5px; }
+.folha-data:disabled { -fx-opacity: 1; }
+.folha-total-rotulo { -fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #1F6DB5; }
+.folha-total-grande { -fx-font-size: 40px; -fx-font-weight: bold; -fx-text-fill: black; }
+
+/* barra de ferramentas do editor */
+.tb { -fx-background-color: white; -fx-border-color: transparent transparent #13263A transparent;
+      -fx-border-width: 0 0 2 0; -fx-padding: 10 24 10 24; }
+.tb-dica { -fx-font-size: 13px; -fx-text-fill: #5B6672; }
+.tb-botao {
+    -fx-background-color: white; -fx-border-color: #13263A; -fx-border-width: 2; -fx-border-radius: 2;
+    -fx-background-radius: 2; -fx-font-weight: bold; -fx-text-fill: #13263A; -fx-padding: 6 14 6 14;
+    -fx-cursor: hand;
+}
+.tb-botao:hover { -fx-background-color: #E8F0F8; }
+.tb-botao:disabled { -fx-opacity: 0.45; }
+.tb-primario { -fx-background-color: #1F6DB5; -fx-border-color: #1F6DB5; -fx-text-fill: white; }
+.tb-primario:hover { -fx-background-color: #185a96; }
+.tb-botao:focused, .folha-adicionar:focused { -fx-focus-color: #1F6DB5; -fx-faint-focus-color: transparent; }
