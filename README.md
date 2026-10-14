@@ -12,7 +12,7 @@ mvn javafx:run
 
 Ou, no IDE, execute a classe `Main` (pasta `src/main/java`).
 
-Na primeira execução a aplicação pede para criar o **Administrador**. Os dados ficam
+A aplicação abre diretamente, sem login nem contas. Os dados ficam
 guardados (serialização de objetos) em `~/NumerosProficuos/dados.ser`.
 
 > Em Mac com processador Apple Silicon, altere no `pom.xml` a propriedade
@@ -61,9 +61,7 @@ Uma linha só entra no orçamento quando tem descrição e preço (fica a amarel
 
 ## Funcionalidades
 
-- US01 Autenticação (palavra-passe até 8 caracteres, com letras, números e símbolos)
-- US02 Configuração da empresa, IVA, condições de pagamento e validade por defeito
-- US03 Gestão de utilizadores (Administrador / Operador)
+- US02 Configuração da empresa (separador «Empresa»), IVA, condições de pagamento e validade por defeito
 - US04 Gestão de clientes (particular e empresa com A/C)
 - US05 Criação de orçamento com número automático (ex.: 2026/014)
 - US06 Linhas, capítulos, subtotais, IVA incluído ou não incluído, total

@@ -2,7 +2,6 @@ package view;
 
 import domain.Orcamento;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleButton;
@@ -20,7 +19,7 @@ public class JanelaPrincipal extends BorderPane {
     private final ToggleButton navClientes;
     private final ToggleButton navAdministracao;
 
-    public JanelaPrincipal(Contexto ctx, Runnable aoSair) {
+    public JanelaPrincipal(Contexto ctx) {
         this.ctx = ctx;
 
         ToggleGroup grupo = new ToggleGroup();
@@ -41,20 +40,9 @@ public class JanelaPrincipal extends BorderPane {
         HBox barra = new HBox(marca, navOrcamentos, navClientes);
         barra.getStyleClass().add("barra");
 
-        if (ctx.auth.isAdministrador()) {
-            navAdministracao = nav("Administração", grupo);
-            navAdministracao.setOnAction(e -> mostrar(new AdministracaoView(ctx)));
-            barra.getChildren().add(navAdministracao);
-        } else {
-            navAdministracao = null;
-        }
-
-        Label utilizador = new Label(ctx.auth.getSessao().getNome() + " · " + ctx.auth.getSessao().getPerfil());
-        utilizador.getStyleClass().add("barra-utilizador");
-        Button sair = new Button("Terminar sessão");
-        sair.getStyleClass().add("botao-barra");
-        sair.setOnAction(e -> aoSair.run());
-        barra.getChildren().addAll(Ui.espaco(), utilizador, sair);
+        navAdministracao = nav("Empresa", grupo);
+        navAdministracao.setOnAction(e -> mostrar(new AdministracaoView(ctx)));
+        barra.getChildren().add(navAdministracao);
 
         setTop(barra);
         setCenter(centro);

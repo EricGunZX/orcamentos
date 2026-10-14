@@ -23,6 +23,22 @@ public class AutenticacaoController {
         return u;
     }
 
+    /**
+     * A aplicação não tem contas: abre sempre com um utilizador interno único.
+     * Se ainda não existir nenhum, cria-o em silêncio.
+     */
+    public Utilizador iniciarSessaoAutomatica() {
+        Utilizador u = repositorio.getUtilizadores().stream()
+                .filter(x -> x.isAtivo() && x instanceof Administrador).findFirst().orElse(null);
+        if (u == null) {
+            u = new Administrador("geral", "Números Profícuos", "Np#2026");
+            repositorio.adicionarUtilizador(u);
+            repositorio.guardar();
+        }
+        sessao = u;
+        return u;
+    }
+
     public void sair() {
         sessao = null;
     }
