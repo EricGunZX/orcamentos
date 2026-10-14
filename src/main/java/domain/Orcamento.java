@@ -171,14 +171,38 @@ public class Orcamento implements Serializable {
 
     // ---------- Estado ----------
 
+    /** Emitido e com a validade ultrapassada (ainda pode ser adjudicado ou recusado). */
+    public boolean isExpirado() {
+        return estado == EstadoOrcamento.EMITIDO && validoAte != null && validoAte.isBefore(LocalDate.now());
+    }
+
+    /** Texto do estado para mostrar ao utilizador (junta "expirado" quando aplicável). */
+    public String getEstadoTexto() {
+        return isExpirado() ? "Emitido (expirado)" : estado.getDescricao();
+    }
+
+    /** Só um rascunho nunca emitido pode ser eliminado. */
+    public boolean podeEliminar() {
+        return estado == EstadoOrcamento.RASCUNHO;
+    }
+
     /** Muda de estado se a transição for válida e regista data e utilizador. */
     public void mudarEstado(EstadoOrcamento novo, String utilizador) {
         if (!estado.podeTransitarPara(novo)) {
             throw new IllegalStateException(
                     "Transição inválida: " + estado + " -> " + novo + ".");
         }
-        if (novo == EstadoOrcamento.EMITIDO && getSubtotal().signum() == 0) {
-            throw new IllegalStateException("Não é possível emitir um orçamento sem linhas.");
+        if (novo == EstadoOrcamento.EMITIDO) {
+            if (getSubtotal().signum() == 0) {
+                throw new IllegalStateException("Não é possível emitir um orçamento sem linhas com valor.");
+            }
+            if (cliente.getMorada() == null || cliente.getMorada().isBlank()) {
+                throw new IllegalStateException("O cliente precisa de morada para emitir o orçamento.");
+            }
+            if (validoAte == null || validoAte.isBefore(LocalDate.now())) {
+                throw new IllegalStateException(
+                        "A validade já passou. Defina uma nova data de validade antes de emitir.");
+            }
         }
         estado = novo;
         historico.add(new MudancaEstado(novo, utilizador));

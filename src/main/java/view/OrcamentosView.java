@@ -132,7 +132,7 @@ public class OrcamentosView extends VBox {
         Ui.fixa(cTotal, 140);
         tabela.getColumns().add(cTotal);
         TableColumn<Orcamento, String> cEstado =
-                Ui.<Orcamento>coluna("Estado", o -> o.getEstado().getDescricao(), 120);
+                Ui.<Orcamento>coluna("Estado", Orcamento::getEstadoTexto, 120);
         cEstado.setCellFactory(col -> new TableCell<Orcamento, String>() {
             @Override
             protected void updateItem(String texto, boolean vazio) {
@@ -145,11 +145,14 @@ public class OrcamentosView extends VBox {
                 }
                 Label badge = new Label(texto);
                 badge.getStyleClass().addAll("badge-celula", "estado-" + o.getEstado().name().toLowerCase());
+                if (o.isExpirado()) {
+                    badge.getStyleClass().add("estado-expirado");
+                }
                 setGraphic(badge);
                 setText(null);
             }
         });
-        Ui.fixa(cEstado, 140);
+        Ui.fixa(cEstado, 170);
         tabela.getColumns().add(cEstado);
         tabela.setOnMouseClicked(e -> {
             if (e.getClickCount() == 2) {
@@ -170,10 +173,16 @@ public class OrcamentosView extends VBox {
                 Ui.guardarPdf(ctx, o, janela());
             }
         });
+        Button bEliminar = Ui.secundario("Eliminar rascunho");
+        bEliminar.setOnAction(e -> eliminarSelecionado());
+        bEliminar.disableProperty().bind(javafx.beans.binding.Bindings.createBooleanBinding(() -> {
+            Orcamento o = tabela.getSelectionModel().getSelectedItem();
+            return o == null || !o.podeEliminar();
+        }, tabela.getSelectionModel().selectedItemProperty()));
         for (Button b : new Button[]{bAbrir, bDuplicar, bPdf}) {
             b.disableProperty().bind(tabela.getSelectionModel().selectedItemProperty().isNull());
         }
-        HBox rodape = new HBox(10, bAbrir, bDuplicar, bPdf);
+        HBox rodape = new HBox(10, bAbrir, bDuplicar, bPdf, Ui.espaco(), bEliminar);
 
         getChildren().addAll(topo, resumo, filtros, tabela, rodape);
         atualizar();
@@ -192,7 +201,7 @@ public class OrcamentosView extends VBox {
         atualizarResumo();
         List<Orcamento> lista = new ArrayList<>(ctx.orcamentos.pesquisar(textoOuNulo(fNumero),
                 textoOuNulo(fCliente), fDe.getValue(), fAte.getValue(), fEstado.getValue()));
-        lista.sort(Comparator.comparing(Orcamento::getData).thenComparing(Orcamento::getNumero).reversed());
+        lista.sort(Comparator.comparing(Orcamento::getNumero).reversed());
         tabela.getItems().setAll(lista);
     }
 
@@ -200,6 +209,18 @@ public class OrcamentosView extends VBox {
         Orcamento o = tabela.getSelectionModel().getSelectedItem();
         if (o != null) {
             abrir.accept(o);
+        }
+    }
+
+    private void eliminarSelecionado() {
+        Orcamento o = tabela.getSelectionModel().getSelectedItem();
+        if (o != null && Ui.confirmar(janela(), "Eliminar o rascunho " + o.getNumero() + "?")) {
+            try {
+                ctx.orcamentos.eliminar(o);
+                atualizar();
+            } catch (RuntimeException ex) {
+                Ui.erro(janela(), Ui.mensagem(ex));
+            }
         }
     }
 
@@ -223,7 +244,7 @@ public class OrcamentosView extends VBox {
 
     /** Diálogo de novo orçamento; também usado pelo botão «Novo orçamento» do editor. */
     static void dialogoNovo(Contexto ctx, javafx.stage.Window janela, java.util.function.Consumer<Orcamento> abrir) {
-        ComboBox<Cliente> cliente = new ComboBox<>(FXCollections.observableArrayList(ctx.clientes.listar()));
+        ComboBox<Cliente> cliente = Ui.comboClientes(ctx.clientes.listar());
         cliente.setPromptText("Escolha o cliente");
         cliente.setPrefWidth(320);
         Button novoCliente = Ui.secundario("Novo cliente…");

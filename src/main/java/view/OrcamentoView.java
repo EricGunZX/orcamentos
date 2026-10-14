@@ -172,7 +172,8 @@ public class OrcamentoView extends BorderPane {
                 : "Este orçamento já não é um rascunho, por isso não pode ser editado.");
         dica.getStyleClass().add("tb-dica");
 
-        Label estado = new Label(orc.getEstado().getDescricao());
+        Label estado = new Label(orc.getEstadoTexto());
+        estado.setMinWidth(Region.USE_PREF_SIZE);
         estado.getStyleClass().addAll("badge", "estado-" + orc.getEstado().name().toLowerCase());
 
         MenuButton bEstado = new MenuButton("Alterar estado");
@@ -181,6 +182,23 @@ public class OrcamentoView extends BorderPane {
             MenuItem item = new MenuItem(rotuloTransicao(novo));
             item.setOnAction(e -> mudarEstado(novo));
             bEstado.getItems().add(item);
+        }
+        if (orc.podeEliminar()) {
+            if (!bEstado.getItems().isEmpty()) {
+                bEstado.getItems().add(new javafx.scene.control.SeparatorMenuItem());
+            }
+            MenuItem del = new MenuItem("Eliminar rascunho");
+            del.setOnAction(e -> {
+                if (Ui.confirmar(janela(), "Eliminar este rascunho? Esta ação não pode ser desfeita.")) {
+                    try {
+                        ctx.orcamentos.eliminar(orc);
+                        voltar.run();
+                    } catch (RuntimeException ex) {
+                        Ui.erro(janela(), Ui.mensagem(ex));
+                    }
+                }
+            });
+            bEstado.getItems().add(del);
         }
         bEstado.setDisable(bEstado.getItems().isEmpty());
 
@@ -212,6 +230,12 @@ public class OrcamentoView extends BorderPane {
             Ui.guardarPdf(ctx, orc, janela());
         });
 
+        dica.setMinWidth(0);
+        dica.setTextOverrun(javafx.scene.control.OverrunStyle.ELLIPSIS);
+        HBox.setHgrow(dica, Priority.SOMETIMES);
+        for (javafx.scene.control.ButtonBase x : new javafx.scene.control.ButtonBase[]{bVoltar, bEstado, bDuplicar, bNovo, bPdf}) {
+            x.setMinWidth(Region.USE_PREF_SIZE);
+        }
         HBox b = new HBox(12, bVoltar, estado, dica, Ui.espaco(), bEstado, bDuplicar, bNovo, bPdf);
         b.setAlignment(Pos.CENTER_LEFT);
         b.getStyleClass().add("tb");
@@ -235,7 +259,9 @@ public class OrcamentoView extends BorderPane {
 
     private void mudarEstado(EstadoOrcamento novo) {
         gravarPendentes();
-        String aviso = novo == EstadoOrcamento.EMITIDO
+        String aviso = novo == EstadoOrcamento.ADJUDICADO && orc.isExpirado()
+                ? "A validade deste orçamento já terminou. Marcar mesmo assim como adjudicado?"
+                : novo == EstadoOrcamento.EMITIDO
                 ? "Ao emitir, o orçamento deixa de poder ser editado. Continuar?"
                 : "Mudar o estado do orçamento para «" + novo.getDescricao() + "»?";
         if (!Ui.confirmar(janela(), aviso)) {
@@ -361,7 +387,8 @@ public class OrcamentoView extends BorderPane {
     private VBox seccaoCliente() {
         Cliente c = orc.getCliente();
 
-        ComboBox<Cliente> troca = new ComboBox<>(FXCollections.observableArrayList(ctx.clientes.listar()));
+        ComboBox<Cliente> troca = Ui.comboClientes(ctx.clientes.listar());
+        troca.setPrefWidth(250);
         troca.setPromptText("Trocar cliente…");
         troca.getStyleClass().add("folha-troca");
         troca.setDisable(!editavel());
@@ -404,7 +431,7 @@ public class OrcamentoView extends BorderPane {
         b.setPercentWidth(50);
         g.getColumnConstraints().addAll(a, b);
         g.add(nome, 0, 0, 2, 1);
-        g.add(linhaCampo("NIF", campoCliente(c::getNif, "—", c::setNif)), 0, 1);
+        g.add(linhaCampo("NIF", campoCliente(c::getNif, "—", v -> c.setNif(ctx.clientes.validarNif(c, v)))), 0, 1);
         g.add(linhaCampo("Morada", campoCliente(c::getMorada, "Rua, n.º, código postal e localidade",
                 c::setMorada)), 0, 2);
         g.add(linhaCampo("Telefone", campoCliente(c::getTelefone, "—", c::setTelefone)), 1, 1);

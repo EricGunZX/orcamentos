@@ -84,6 +84,12 @@ public class OrcamentoController {
         repositorio.guardar();
     }
 
+    public void eliminar(Orcamento o) {
+        auth.exigirSessao();
+        repositorio.removerOrcamento(o);
+        repositorio.guardar();
+    }
+
     public Orcamento duplicar(Orcamento original) {
         String utilizador = auth.exigirSessao().getNomeUtilizador();
         Orcamento copia = original.duplicar(repositorio.proximoNumeroOrcamento(),

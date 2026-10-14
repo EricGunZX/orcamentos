@@ -80,6 +80,6 @@ public abstract class Cliente implements Serializable {
 
     @Override
     public String toString() {
-        return nome + " (NIF " + nif + ")";
+        return (codigo == null ? "" : codigo + " · ") + nome + " (NIF " + nif + ")";
     }
 }

@@ -69,7 +69,8 @@ public class GeradorPdf {
         private PDPageContentStream cs;
         private PDImageXObject logotipo;
         private float t;          // posição atual (a partir do topo)
-        private float tabTopo;    // topo da tabela na página atual
+        private float tabTopo;
+        private float fundoTab = TAB_FUNDO;    // topo da tabela na página atual
 
         Escritor(PDDocument doc, Orcamento o, Empresa e) {
             this.doc = doc;
@@ -100,6 +101,7 @@ public class GeradorPdf {
             novaPagina(true);
             tabela();
             totaisECondicoes();
+            
             fecharTabela();
             cs.close();
             rodape();
@@ -173,7 +175,6 @@ public class GeradorPdf {
                 nomeX = esq + larg + 10;
                 baixoLogo = TOPO + 4 + alt;
             }
-            // Nome da empresa (ao lado do logótipo, ou por cima se não houver)
             float larguraNome = 217f - nomeX;
             List<String> nome = quebrar(e.getDesignacao(), NEGRITO, 13f, larguraNome);
             float tn = TOPO + 28;
@@ -181,7 +182,6 @@ public class GeradorPdf {
                 texto(NEGRITO, 13f, nomeX, Y(tn), parte);
                 tn += 15f;
             }
-            // Morada e contribuinte, por baixo
             float tm = Math.max(baixoLogo + 14, tn + 4);
             tm = campo("Morada: ", e.getMorada(), esq, tm);
             tm = campo("Nº Contribuinte: ", e.getNif(), esq, tm);
@@ -285,9 +285,9 @@ public class GeradorPdf {
 
         /** Desenha a moldura e as colunas da tabela na página atual. */
         private void fecharTabela() throws IOException {
-            retangulo(X[0], Y(tabTopo), X[5] - X[0], TAB_FUNDO - tabTopo);
+            retangulo(X[0], Y(tabTopo), X[5] - X[0], fundoTab - tabTopo);
             for (int i = 1; i < 5; i++) {
-                linha(X[i], Y(tabTopo), X[i], Y(TAB_FUNDO));
+                linha(X[i], Y(tabTopo), X[i], Y(fundoTab));
             }
         }
 

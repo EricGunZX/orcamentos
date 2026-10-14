@@ -37,6 +37,24 @@ public class ClienteController {
         return c;
     }
 
+    public void eliminar(Cliente c) {
+        auth.exigirSessao();
+        repositorio.removerCliente(c);
+        repositorio.guardar();
+    }
+
+    /** Valida um NIF novo para um cliente existente (formato e duplicados). */
+    public String validarNif(Cliente c, String nif) {
+        auth.exigirSessao();
+        String v = domain.Validacao.nif(nif);
+        repositorio.procurarClientePorNif(v).ifPresent(outro -> {
+            if (outro != c) {
+                throw new IllegalArgumentException("Já existe outro cliente com esse NIF.");
+            }
+        });
+        return v;
+    }
+
     /** Grava alterações feitas a um cliente já registado. */
     public void guardarAlteracoes() {
         auth.exigirSessao();

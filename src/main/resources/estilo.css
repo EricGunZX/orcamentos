@@ -78,8 +78,10 @@
 .dialog-pane > .button-bar > .container { -fx-padding: 8 12 12 12; }
 .dialog-pane .label { -fx-text-fill: #13263A; }
 .scroll-bar { -fx-background-color: transparent; -fx-padding: 0; }
-.scroll-bar .track { -fx-background-color: transparent; -fx-border-color: transparent; }
-.scroll-bar .thumb { -fx-background-color: #C3CCD8; -fx-background-radius: 6; -fx-background-insets: 2; }
+.scroll-bar:vertical { -fx-pref-width: 12; }
+.scroll-bar:horizontal { -fx-pref-height: 12; }
+.scroll-bar .track { -fx-background-color: #EEF1F5; -fx-border-color: transparent; -fx-background-radius: 6; }
+.scroll-bar .thumb { -fx-background-color: #A9B4C2; -fx-background-radius: 6; -fx-background-insets: 2; }
 .scroll-bar .thumb:hover { -fx-background-color: #9AA5B1; }
 .scroll-bar .increment-button, .scroll-bar .decrement-button { -fx-padding: 0; -fx-pref-height: 0; -fx-pref-width: 0; }
 .scroll-bar .increment-arrow, .scroll-bar .decrement-arrow { -fx-padding: 0; -fx-shape: ""; }
@@ -376,3 +378,5 @@
 .radio-button .dot { -fx-background-color: transparent; -fx-background-radius: 20; -fx-padding: 4; }
 .radio-button:selected .dot { -fx-background-color: #1F6DB5; }
 .radio-button:hover .radio { -fx-background-color: #1F6DB5, white; }
+
+.estado-expirado { -fx-background-color: #FDE8C8; -fx-text-fill: #8A4B00; }

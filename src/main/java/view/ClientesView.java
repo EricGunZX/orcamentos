@@ -50,7 +50,20 @@ public class ClientesView extends VBox {
         Button editar = Ui.secundario("Editar selecionado");
         editar.disableProperty().bind(tabela.getSelectionModel().selectedItemProperty().isNull());
         editar.setOnAction(e -> editar());
-        HBox rodape = new HBox(10, editar);
+        Button eliminar = Ui.secundario("Eliminar");
+        eliminar.disableProperty().bind(tabela.getSelectionModel().selectedItemProperty().isNull());
+        eliminar.setOnAction(e -> {
+            Cliente c = tabela.getSelectionModel().getSelectedItem();
+            if (c != null && Ui.confirmar(janela(), "Eliminar o cliente " + c.getNome() + "?")) {
+                try {
+                    ctx.clientes.eliminar(c);
+                    atualizar();
+                } catch (RuntimeException ex) {
+                    Ui.erro(janela(), Ui.mensagem(ex));
+                }
+            }
+        });
+        HBox rodape = new HBox(10, editar, Ui.espaco(), eliminar);
 
         getChildren().addAll(topo, pesquisa, tabela, rodape);
         atualizar();

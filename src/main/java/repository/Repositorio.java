@@ -122,6 +122,32 @@ public class Repositorio {
         dados.orcamentos.add(o);
     }
 
+    /** Elimina um rascunho; se for o último número do ano, o número volta a ficar livre (sem buracos). */
+    public void removerOrcamento(Orcamento o) {
+        if (!o.podeEliminar()) {
+            throw new IllegalStateException("Só os rascunhos podem ser eliminados. Use «Anular».");
+        }
+        dados.orcamentos.remove(o);
+        String[] p = o.getNumero().split("/");
+        try {
+            int ano = Integer.parseInt(p[0]);
+            int seq = Integer.parseInt(p[1]);
+            Integer atual = dados.sequenciaPorAno.get(ano);
+            if (atual != null && atual == seq) {
+                dados.sequenciaPorAno.put(ano, seq - 1);
+            }
+        } catch (RuntimeException ex) {
+            // número fora do formato: não mexe na sequência
+        }
+    }
+
+    public void removerCliente(Cliente c) {
+        if (!orcamentosDoCliente(c).isEmpty()) {
+            throw new IllegalStateException("Este cliente tem orçamentos e não pode ser eliminado.");
+        }
+        dados.clientes.remove(c);
+    }
+
     public List<Orcamento> orcamentosDoCliente(Cliente c) {
         List<Orcamento> r = new ArrayList<>();
         for (Orcamento o : dados.orcamentos) {

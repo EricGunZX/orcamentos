@@ -361,4 +361,22 @@ public final class Ui {
         final String uri = f.toURI().toString();
         a.showAndWait().filter(b -> b == abrir).ifPresent(b -> ctx.host.showDocument(uri));
     }
+
+    /** Lista de clientes com código, nome e NIF, e barra de rolagem visível quando há muitos. */
+    public static javafx.scene.control.ComboBox<domain.Cliente> comboClientes(java.util.List<domain.Cliente> clientes) {
+        javafx.scene.control.ComboBox<domain.Cliente> c = new javafx.scene.control.ComboBox<>(
+                javafx.collections.FXCollections.observableArrayList(clientes));
+        c.setVisibleRowCount(6);
+        javafx.util.Callback<javafx.scene.control.ListView<domain.Cliente>, javafx.scene.control.ListCell<domain.Cliente>> f =
+                lv -> new javafx.scene.control.ListCell<domain.Cliente>() {
+                    @Override
+                    protected void updateItem(domain.Cliente x, boolean vazio) {
+                        super.updateItem(x, vazio);
+                        setText(vazio || x == null ? null : x.toString());
+                    }
+                };
+        c.setCellFactory(f);
+        c.setButtonCell(f.call(null));
+        return c;
+    }
 }
