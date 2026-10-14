@@ -12,6 +12,8 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.FlowPane;
@@ -39,16 +41,53 @@ public class OrcamentosView extends VBox {
     private final ComboBox<EstadoOrcamento> fEstado = new ComboBox<>();
     private final DatePicker fDe = new DatePicker();
     private final DatePicker fAte = new DatePicker();
+    private final Label lblTotalOrc = new Label();
+    private final Label lblRascunhos = new Label();
+    private final Label lblAdjudicados = new Label();
+    private final Label lblValor = new Label();
+
+    private static VBox cartaoResumo(String titulo, Label valor, boolean azul) {
+        Label t = new Label(titulo);
+        t.getStyleClass().add("stat-titulo");
+        valor.getStyleClass().add("stat-valor");
+        VBox v = new VBox(2, t, valor);
+        v.getStyleClass().add("stat");
+        if (azul) {
+            v.getStyleClass().add("stat-azul");
+        }
+        HBox.setHgrow(v, Priority.ALWAYS);
+        v.setMaxWidth(Double.MAX_VALUE);
+        return v;
+    }
+
+    private void atualizarResumo() {
+        List<Orcamento> todos = ctx.orcamentos.listar();
+        lblTotalOrc.setText(String.valueOf(todos.size()));
+        lblRascunhos.setText(String.valueOf(todos.stream()
+                .filter(o -> o.getEstado() == EstadoOrcamento.RASCUNHO).count()));
+        lblAdjudicados.setText(String.valueOf(todos.stream()
+                .filter(o -> o.getEstado() == EstadoOrcamento.ADJUDICADO).count()));
+        lblValor.setText(Dinheiro.formatar(todos.stream()
+                .filter(o -> o.getEstado() == EstadoOrcamento.ADJUDICADO)
+                .map(Orcamento::getTotal).reduce(java.math.BigDecimal.ZERO, java.math.BigDecimal::add)));
+    }
 
     public OrcamentosView(Contexto ctx, Consumer<Orcamento> abrir) {
         this.ctx = ctx;
         this.abrir = abrir;
         getStyleClass().add("pagina");
+        setMaxWidth(1280);
 
         Button novo = Ui.primario("Novo orçamento");
         novo.setOnAction(e -> novoOrcamento());
         HBox topo = new HBox(12, Ui.titulo("Orçamentos"), Ui.espaco(), novo);
         topo.setAlignment(Pos.CENTER_LEFT);
+
+        // ---- resumo
+        HBox resumo = new HBox(14, cartaoResumo("ORÇAMENTOS", lblTotalOrc, false),
+                cartaoResumo("EM RASCUNHO", lblRascunhos, false),
+                cartaoResumo("ADJUDICADOS", lblAdjudicados, false),
+                cartaoResumo("VALOR ADJUDICADO", lblValor, true));
 
         // ---- filtros
         fNumero.setPromptText("Número");
@@ -60,10 +99,10 @@ public class OrcamentosView extends VBox {
         fEstado.setPrefWidth(170);
         Ui.formatoData(fDe);
         Ui.formatoData(fAte);
-        fDe.setPromptText("De (dd/mm/aaaa)");
-        fDe.setPrefWidth(150);
-        fAte.setPromptText("Até (dd/mm/aaaa)");
-        fAte.setPrefWidth(150);
+        fDe.setPromptText("Desde");
+        fDe.setPrefWidth(160);
+        fAte.setPromptText("Até");
+        fAte.setPrefWidth(160);
         Button limpar = Ui.secundario("Limpar");
         limpar.setOnAction(e -> {
             fNumero.clear();
@@ -73,6 +112,7 @@ public class OrcamentosView extends VBox {
             fAte.setValue(null);
         });
         FlowPane filtros = new FlowPane(10, 10, fNumero, fCliente, fEstado, fDe, fAte, limpar);
+        filtros.getStyleClass().add("filtros");
         fNumero.textProperty().addListener((o, a, b) -> atualizar());
         fCliente.textProperty().addListener((o, a, b) -> atualizar());
         fEstado.valueProperty().addListener((o, a, b) -> atualizar());
@@ -82,12 +122,35 @@ public class OrcamentosView extends VBox {
         // ---- tabela
         tabela.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         tabela.setPlaceholder(new Label("Sem orçamentos. Use «Novo orçamento» para criar o primeiro."));
-        tabela.getColumns().add(Ui.<Orcamento>coluna("Número", Orcamento::getNumero, 100));
-        tabela.getColumns().add(Ui.<Orcamento>coluna("Data", o -> o.getData().format(DATA), 100));
+        tabela.getColumns().add(Ui.fixa(Ui.<Orcamento>coluna("Número", Orcamento::getNumero, 110), 110));
+        tabela.getColumns().add(Ui.fixa(Ui.<Orcamento>coluna("Data", o -> o.getData().format(DATA), 110), 110));
         tabela.getColumns().add(Ui.<Orcamento>coluna("Cliente", o -> o.getCliente().getNome(), 240));
         tabela.getColumns().add(Ui.<Orcamento>coluna("Assunto", o -> o.getAssunto() == null ? "" : o.getAssunto(), 240));
-        tabela.getColumns().add(Ui.<Orcamento>coluna("Total", o -> Dinheiro.formatar(o.getTotal()), 110));
-        tabela.getColumns().add(Ui.<Orcamento>coluna("Estado", o -> o.getEstado().getDescricao(), 110));
+        TableColumn<Orcamento, String> cTotal =
+                Ui.<Orcamento>coluna("Total", o -> Dinheiro.formatar(o.getTotal()), 110);
+        cTotal.setStyle("-fx-alignment: CENTER-RIGHT; -fx-font-weight: bold;");
+        Ui.fixa(cTotal, 140);
+        tabela.getColumns().add(cTotal);
+        TableColumn<Orcamento, String> cEstado =
+                Ui.<Orcamento>coluna("Estado", o -> o.getEstado().getDescricao(), 120);
+        cEstado.setCellFactory(col -> new TableCell<Orcamento, String>() {
+            @Override
+            protected void updateItem(String texto, boolean vazio) {
+                super.updateItem(texto, vazio);
+                Orcamento o = getIndex() >= 0 && getIndex() < getTableView().getItems().size()
+                        ? getTableView().getItems().get(getIndex()) : null;
+                if (vazio || o == null) {
+                    setGraphic(null);
+                    return;
+                }
+                Label badge = new Label(texto);
+                badge.getStyleClass().addAll("badge-celula", "estado-" + o.getEstado().name().toLowerCase());
+                setGraphic(badge);
+                setText(null);
+            }
+        });
+        Ui.fixa(cEstado, 140);
+        tabela.getColumns().add(cEstado);
         tabela.setOnMouseClicked(e -> {
             if (e.getClickCount() == 2) {
                 abrirSelecionado();
@@ -112,7 +175,7 @@ public class OrcamentosView extends VBox {
         }
         HBox rodape = new HBox(10, bAbrir, bDuplicar, bPdf);
 
-        getChildren().addAll(topo, filtros, tabela, rodape);
+        getChildren().addAll(topo, resumo, filtros, tabela, rodape);
         atualizar();
     }
 
@@ -126,6 +189,7 @@ public class OrcamentosView extends VBox {
     }
 
     private void atualizar() {
+        atualizarResumo();
         List<Orcamento> lista = new ArrayList<>(ctx.orcamentos.pesquisar(textoOuNulo(fNumero),
                 textoOuNulo(fCliente), fDe.getValue(), fAte.getValue(), fEstado.getValue()));
         lista.sort(Comparator.comparing(Orcamento::getData).thenComparing(Orcamento::getNumero).reversed());

@@ -190,8 +190,17 @@ public final class Ui {
         return t;
     }
 
+    /** Logótipo com letras brancas, para fundos escuros (barra do topo). */
+    public static ImageView logotipoBranco(double largura) {
+        return carregarLogo("/logo_branco.png", largura);
+    }
+
     public static ImageView logotipo(double largura) {
-        try (InputStream in = Ui.class.getResourceAsStream("/logo.png")) {
+        return carregarLogo("/logo.png", largura);
+    }
+
+    private static ImageView carregarLogo(String recurso, double largura) {
+        try (InputStream in = Ui.class.getResourceAsStream(recurso)) {
             ImageView v = new ImageView(new Image(in));
             v.setFitWidth(largura);
             v.setPreserveRatio(true);
@@ -200,6 +209,51 @@ public final class Ui {
         } catch (Exception e) {
             return new ImageView();
         }
+    }
+
+    // ------------------------------------------------- formulário em secções (estilo "cartão")
+
+    /** Título de secção com linha por baixo (ex.: «Informações básicas»). */
+    public static javafx.scene.layout.VBox secaoForm(String titulo) {
+        Label l = new Label(titulo);
+        l.getStyleClass().add("form-secao");
+        Region regra = new Region();
+        regra.getStyleClass().add("form-regra");
+        regra.setMinHeight(1);
+        regra.setPrefHeight(1);
+        javafx.scene.layout.VBox v = new javafx.scene.layout.VBox(4, l, regra);
+        v.setPadding(new Insets(10, 0, 4, 0));
+        return v;
+    }
+
+    /** Campo com o rótulo por cima; {@code obrigatorio} acrescenta o asterisco vermelho. */
+    public static javafx.scene.layout.VBox campoForm(String rotulo, boolean obrigatorio, Node campo) {
+        Label l = new Label(rotulo);
+        l.getStyleClass().add("form-rotulo");
+        HBox topo = new HBox(2, l);
+        if (obrigatorio) {
+            Label a = new Label("*");
+            a.getStyleClass().add("form-asterisco");
+            topo.getChildren().add(a);
+        }
+        javafx.scene.layout.VBox v = new javafx.scene.layout.VBox(5, topo, campo);
+        if (campo instanceof Region) {
+            ((Region) campo).setMaxWidth(Double.MAX_VALUE);
+        }
+        return v;
+    }
+
+    /** Grelha de duas colunas iguais para os campos de um formulário. */
+    public static GridPane gridForm() {
+        GridPane g = new GridPane();
+        g.setHgap(26);
+        g.setVgap(14);
+        ColumnConstraints a = new ColumnConstraints();
+        a.setPercentWidth(50);
+        ColumnConstraints b = new ColumnConstraints();
+        b.setPercentWidth(50);
+        g.getColumnConstraints().addAll(a, b);
+        return g;
     }
 
     /** Grelha de formulário: coluna de rótulos + coluna de campos. */
@@ -226,6 +280,14 @@ public final class Ui {
         TableColumn<T, String> c = new TableColumn<>(titulo);
         c.setCellValueFactory(cd -> new javafx.beans.property.ReadOnlyStringWrapper(valor.apply(cd.getValue())));
         c.setPrefWidth(largura);
+        return c;
+    }
+
+    /** Coluna de largura fixa (os restantes campos ficam com o espaço que sobra, sem cortar o texto). */
+    public static <S, T> TableColumn<S, T> fixa(TableColumn<S, T> c, double largura) {
+        c.setMinWidth(largura);
+        c.setPrefWidth(largura);
+        c.setMaxWidth(largura);
         return c;
     }
 

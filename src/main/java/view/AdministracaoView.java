@@ -33,10 +33,12 @@ public class AdministracaoView extends ScrollPane {
     }
 
     private VBox cartao(String titulo, javafx.scene.Node... conteudo) {
-        VBox v = new VBox(12, Ui.seccao(titulo));
+        Label cab = new Label(titulo);
+        cab.getStyleClass().add("form-titulo");
+        VBox v = new VBox(10, cab);
         v.getChildren().addAll(conteudo);
         v.getStyleClass().addAll("cartao", "papel");
-        v.setMaxWidth(900);
+        v.setMaxWidth(1000);
         return v;
     }
 
@@ -46,7 +48,11 @@ public class AdministracaoView extends ScrollPane {
         Empresa e = ctx.admin.getEmpresa();
         TextField designacao = new TextField(e.getDesignacao());
         TextField nif = new TextField(e.getNif());
-        TextField morada = new TextField(e.getMorada());
+        TextArea morada = new TextArea(e.getMorada());
+        morada.setPrefRowCount(2);
+        morada.setMinHeight(64);
+        morada.setPrefHeight(64);
+        morada.setWrapText(true);
         TextField telefone = new TextField(e.getTelefone() == null ? "" : e.getTelefone());
         TextField email = new TextField(e.getEmail() == null ? "" : e.getEmail());
         TextField website = new TextField(e.getWebsite() == null ? "" : e.getWebsite());
@@ -65,14 +71,16 @@ public class AdministracaoView extends ScrollPane {
         HBox linhaLogo = new HBox(8, logotipo, escolher);
         HBox.setHgrow(logotipo, javafx.scene.layout.Priority.ALWAYS);
 
-        GridPane g = Ui.grelha();
-        Ui.linha(g, 0, "Designação", designacao);
-        Ui.linha(g, 1, "NIF", nif);
-        Ui.linha(g, 2, "Morada", morada);
-        Ui.linha(g, 3, "Telefone", telefone);
-        Ui.linha(g, 4, "E-mail", email);
-        Ui.linha(g, 5, "Website", website);
-        Ui.linha(g, 6, "Logótipo (PDF)", linhaLogo);
+        GridPane g1 = Ui.gridForm();
+        g1.add(Ui.campoForm("Nome da empresa", true, designacao), 0, 0);
+        g1.add(Ui.campoForm("NIF", true, nif), 1, 0);
+        GridPane g2 = Ui.gridForm();
+        g2.add(Ui.campoForm("Telefone", false, telefone), 0, 0);
+        g2.add(Ui.campoForm("E-mail", false, email), 1, 0);
+        g2.add(Ui.campoForm("Página do site", false, website), 0, 1, 2, 1);
+        GridPane g3 = Ui.gridForm();
+        g3.add(Ui.campoForm("Morada", true, morada), 0, 0, 2, 1);
+        g3.add(Ui.campoForm("Logótipo (imagem PNG ou JPG)", false, linhaLogo), 0, 1, 2, 1);
 
         Button guardar = Ui.primario("Guardar dados da empresa");
         guardar.setOnAction(ev -> {
@@ -85,7 +93,8 @@ public class AdministracaoView extends ScrollPane {
                 Ui.erro(janela(), Ui.mensagem(ex));
             }
         });
-        return cartao("EMPRESA EMISSORA", g, new HBox(guardar));
+        return cartao("Dados da empresa", Ui.secaoForm("Informações básicas"), g1, Ui.secaoForm("Contacto"), g2,
+                Ui.secaoForm("Localização"), g3, new HBox(guardar));
     }
 
     // --------------------------------------------------------------- parâmetros
@@ -93,18 +102,16 @@ public class AdministracaoView extends ScrollPane {
     private VBox cartaoParametros() {
         Empresa e = ctx.admin.getEmpresa();
         TextField iva = new TextField(Ui.semZeros(e.getTaxaIva()));
-        iva.setMaxWidth(100);
         TextField dias = new TextField(String.valueOf(e.getDiasValidadePorDefeito()));
-        dias.setMaxWidth(100);
         TextArea pagamento = new TextArea(e.getCondicoesPagamentoPorDefeito() == null
                 ? "" : e.getCondicoesPagamentoPorDefeito());
         pagamento.setPrefRowCount(2);
         pagamento.setWrapText(true);
 
-        GridPane g = Ui.grelha();
-        Ui.linha(g, 0, "Taxa de IVA (%)", iva);
-        Ui.linha(g, 1, "Validade (dias)", dias);
-        Ui.linha(g, 2, "Condições de pagamento", pagamento);
+        GridPane g = Ui.gridForm();
+        g.add(Ui.campoForm("Taxa de IVA (%)", true, iva), 0, 0);
+        g.add(Ui.campoForm("Validade do orçamento (dias)", true, dias), 1, 0);
+        g.add(Ui.campoForm("Condições de pagamento", false, pagamento), 0, 1, 2, 1);
 
         Label nota = new Label("Estes valores aplicam-se aos novos orçamentos; os já criados não mudam.");
         nota.getStyleClass().add("subtitulo");
@@ -119,6 +126,6 @@ public class AdministracaoView extends ScrollPane {
                 Ui.erro(janela(), Ui.mensagem(ex));
             }
         });
-        return cartao("PARÂMETROS POR DEFEITO", g, nota, new HBox(guardar));
+        return cartao("Valores por defeito dos orçamentos", g, nota, new HBox(guardar));
     }
 }

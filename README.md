@@ -40,6 +40,10 @@ instalar nada. O executável tem de ser gerado no sistema onde vai correr (um `.
 Os dados do cliente ficam em `C:\Users\<utilizador>\NumerosProficuos\dados.ser`, fora da pasta da
 aplicação, por isso uma nova versão da aplicação não apaga os orçamentos.
 
+## Aspeto
+
+Interface moderna: barra azul com menu «hambúrguer» e menu lateral (Orçamentos, Clientes, Empresa), formulários em secções com o rótulo por cima, cartões de resumo (orçamentos, rascunhos, adjudicados, valor adjudicado), filtros, tabela com estados em etiquetas coloridas e janelas de diálogo uniformes.
+
 ## Editor do orçamento
 
 Folha A4 com barra azul, no estilo da página «opção A · cartão»: clica-se em qualquer texto para o editar

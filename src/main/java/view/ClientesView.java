@@ -20,6 +20,7 @@ public class ClientesView extends VBox {
     public ClientesView(Contexto ctx) {
         this.ctx = ctx;
         getStyleClass().add("pagina");
+        setMaxWidth(1280);
 
         Button novo = Ui.primario("Novo cliente");
         novo.setOnAction(e -> ClienteDialog.mostrar(ctx, janela(), null).ifPresent(c -> atualizar()));
@@ -32,14 +33,13 @@ public class ClientesView extends VBox {
 
         tabela.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         tabela.setPlaceholder(new Label("Ainda não há clientes registados."));
-        tabela.getColumns().add(Ui.<Cliente>coluna("Código", c -> c.getCodigo() == null ? "" : c.getCodigo(), 70));
-        tabela.getColumns().add(Ui.<Cliente>coluna("Tipo", Cliente::getTipo, 90));
-        tabela.getColumns().add(Ui.<Cliente>coluna("Nome / Designação", Cliente::getNome, 220));
-        tabela.getColumns().add(Ui.<Cliente>coluna("NIF", Cliente::getNif, 100));
-        tabela.getColumns().add(Ui.<Cliente>coluna("Morada", Cliente::getMorada, 260));
-        tabela.getColumns().add(Ui.<Cliente>coluna("Telefone", c -> nulo(c.getTelefone()), 100));
-        tabela.getColumns().add(Ui.<Cliente>coluna("E-mail", c -> nulo(c.getEmail()), 180));
-        tabela.getColumns().add(Ui.<Cliente>coluna("A/C", c -> nulo(c.getContacto()), 140));
+        tabela.getColumns().add(Ui.fixa(Ui.<Cliente>coluna("Código", c -> c.getCodigo() == null ? "" : c.getCodigo(), 90), 90));
+        tabela.getColumns().add(Ui.fixa(Ui.<Cliente>coluna("Tipo", Cliente::getTipo, 110), 110));
+        tabela.getColumns().add(Ui.<Cliente>coluna("Nome / Designação", Cliente::getNome, 260));
+        tabela.getColumns().add(Ui.fixa(Ui.<Cliente>coluna("NIF", Cliente::getNif, 110), 110));
+        tabela.getColumns().add(Ui.fixa(Ui.<Cliente>coluna("Telefone", c -> nulo(c.getTelefone()), 130), 130));
+        tabela.getColumns().add(Ui.fixa(Ui.<Cliente>coluna("E-mail", c -> nulo(c.getEmail()), 230), 230));
+        tabela.getColumns().add(Ui.<Cliente>coluna("Morada", Cliente::getMorada, 300));
         tabela.setOnMouseClicked(e -> {
             if (e.getClickCount() == 2) {
                 editar();

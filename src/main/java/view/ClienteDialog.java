@@ -3,7 +3,12 @@ package view;
 import domain.Cliente;
 import domain.ClienteEmpresa;
 import domain.Validacao;
-import javafx.scene.control.ChoiceBox;
+import javafx.geometry.Insets;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.ToggleGroup;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import java.util.function.Supplier;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
@@ -23,21 +28,27 @@ final class ClienteDialog {
     static Optional<Cliente> mostrar(Contexto ctx, Window dono, Cliente existente) {
         boolean novo = existente == null;
 
-        ChoiceBox<String> tipo = new ChoiceBox<>();
-        tipo.getItems().addAll("Particular", "Empresa");
-        tipo.setValue(novo || !(existente instanceof ClienteEmpresa) ? "Particular" : "Empresa");
-        tipo.setDisable(!novo);
+        ToggleGroup grupo = new ToggleGroup();
+        RadioButton rbPart = new RadioButton("Particular");
+        RadioButton rbEmp = new RadioButton("Empresa");
+        rbPart.setToggleGroup(grupo);
+        rbEmp.setToggleGroup(grupo);
+        boolean eEmpresa = !novo && existente instanceof ClienteEmpresa;
+        (eEmpresa ? rbEmp : rbPart).setSelected(true);
+        rbPart.setDisable(!novo);
+        rbEmp.setDisable(!novo);
+        HBox tipoBox = new HBox(24, rbPart, rbEmp);
+        tipoBox.setPadding(new Insets(4, 0, 0, 0));
 
-        Label rotuloNome = Ui.rotulo("Nome");
         TextField nome = new TextField();
         TextField nif = new TextField();
         nif.setPromptText("9 dígitos");
         TextField morada = new TextField();
+        morada.setPromptText("Rua, n.º, código postal e localidade");
         TextField telefone = new TextField();
         TextField email = new TextField();
         TextField contacto = new TextField();
         contacto.setPromptText("Pessoa de contacto");
-        Label rotuloContacto = Ui.rotulo("A/C");
 
         if (!novo) {
             nome.setText(existente.getNome());
@@ -51,29 +62,36 @@ final class ClienteDialog {
             }
         }
 
-        GridPane g = Ui.grelha();
-        Ui.linha(g, 0, "Tipo", tipo);
-        g.add(rotuloNome, 0, 1);
-        g.add(nome, 1, 1);
-        Ui.linha(g, 2, "NIF", nif);
-        Ui.linha(g, 3, "Morada", morada);
-        Ui.linha(g, 4, "Telefone", telefone);
-        Ui.linha(g, 5, "E-mail", email);
-        g.add(rotuloContacto, 0, 6);
-        g.add(contacto, 1, 6);
+        Label rotuloNome = new Label("Nome");
+        rotuloNome.getStyleClass().add("form-rotulo");
+        Label ast = new Label("*");
+        ast.getStyleClass().add("form-asterisco");
+        VBox campoNome = new VBox(5, new HBox(2, rotuloNome, ast), nome);
+        VBox campoContacto = Ui.campoForm("Contacto (A/C)", false, contacto);
+
+        GridPane g = Ui.gridForm();
+        g.add(Ui.campoForm("Tipo de cliente", true, tipoBox), 0, 0, 2, 1);
+        g.add(campoNome, 0, 1);
+        g.add(Ui.campoForm("NIF", true, nif), 1, 1);
+        g.add(Ui.campoForm("Telefone", false, telefone), 0, 2);
+        g.add(Ui.campoForm("E-mail", false, email), 1, 2);
+        g.add(campoContacto, 0, 3, 2, 1);
+        g.add(Ui.campoForm("Morada", true, morada), 0, 4, 2, 1);
+
+        VBox conteudo = new VBox(2, Ui.secaoForm("Informações básicas"), g);
+        conteudo.setPrefWidth(620);
 
         Runnable ajustar = () -> {
-            boolean empresa = "Empresa".equals(tipo.getValue());
+            boolean empresa = rbEmp.isSelected();
             rotuloNome.setText(empresa ? "Designação social" : "Nome");
-            rotuloContacto.setVisible(empresa);
-            rotuloContacto.setManaged(empresa);
-            contacto.setVisible(empresa);
-            contacto.setManaged(empresa);
+            campoContacto.setVisible(empresa);
+            campoContacto.setManaged(empresa);
         };
-        tipo.valueProperty().addListener((o, a, b) -> ajustar.run());
+        grupo.selectedToggleProperty().addListener((o, x, y) -> ajustar.run());
         ajustar.run();
+        Supplier<String> tipoEscolhido = () -> rbEmp.isSelected() ? "Empresa" : "Particular";
 
-        Dialog<ButtonType> d = Ui.dialogo(dono, novo ? "Novo cliente" : "Editar cliente", g,
+        Dialog<ButtonType> d = Ui.dialogo(dono, novo ? "Adicionar cliente" : "Editar cliente", conteudo,
                 novo ? "Registar" : "Guardar");
         Cliente[] resultado = new Cliente[1];
 
@@ -85,7 +103,7 @@ final class ClienteDialog {
                 throw new IllegalArgumentException("Já existe um cliente com esse NIF.");
             }
             if (novo) {
-                if ("Empresa".equals(tipo.getValue())) {
+                if ("Empresa".equals(tipoEscolhido.get())) {
                     resultado[0] = ctx.clientes.registarEmpresa(nome.getText(), nifLimpo, morada.getText(),
                             telefone.getText(), email.getText(), contacto.getText());
                 } else {
