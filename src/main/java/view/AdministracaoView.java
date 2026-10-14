@@ -21,7 +21,7 @@ public class AdministracaoView extends ScrollPane {
 
     public AdministracaoView(Contexto ctx) {
         this.ctx = ctx;
-        VBox pagina = new VBox(16, Ui.titulo("Empresa"), cartaoEmpresa(), cartaoParametros());
+        VBox pagina = new VBox(16, Ui.titulo("Definições"), cartaoEmpresa(), cartaoParametros());
         pagina.getStyleClass().add("pagina");
         setContent(pagina);
         setFitToWidth(true);

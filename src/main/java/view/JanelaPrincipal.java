@@ -37,14 +37,17 @@ public class JanelaPrincipal extends BorderPane {
         });
         navOrcamentos = nav("Orçamentos", grupo);
         navClientes = nav("Clientes", grupo);
-        navEmpresa = nav("Empresa", grupo);
+        navEmpresa = nav("Definições", grupo);
         navOrcamentos.setOnAction(e -> mostrarOrcamentos());
         navClientes.setOnAction(e -> mostrar(new ClientesView(ctx)));
         navEmpresa.setOnAction(e -> mostrar(new AdministracaoView(ctx)));
 
         Label seccao = new Label("MENU");
         seccao.getStyleClass().add("menu-seccao");
-        menu.getChildren().addAll(seccao, navOrcamentos, navClientes, navEmpresa);
+        Region folga = new Region();
+        VBox.setVgrow(folga, javafx.scene.layout.Priority.ALWAYS);
+        // «Definições» (dados da empresa) fica discreto, no fundo do menu
+        menu.getChildren().addAll(seccao, navOrcamentos, navClientes, folga, navEmpresa);
         menu.getStyleClass().add("menu-lateral");
         menu.setPrefWidth(230);
         menu.setMinWidth(230);
@@ -75,6 +78,11 @@ public class JanelaPrincipal extends BorderPane {
         esquerda.setAlignment(Pos.CENTER_LEFT);
         HBox direita = new HBox(empresa);
         direita.setAlignment(Pos.CENTER_RIGHT);
+        for (HBox h : new HBox[]{marcaBox, esquerda, direita}) {
+            h.setPickOnBounds(false);
+            h.setMaxWidth(Region.USE_PREF_SIZE);
+        }
+        barra.setPickOnBounds(false);
         barra.getChildren().addAll(marcaBox, esquerda, direita);
         StackPane.setAlignment(marcaBox, Pos.CENTER);
         StackPane.setAlignment(esquerda, Pos.CENTER_LEFT);

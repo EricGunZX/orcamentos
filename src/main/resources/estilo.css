@@ -365,6 +365,14 @@
 .cartao .text-field:focused, .cartao .text-area:focused, .dialog-pane .text-field:focused, .dialog-pane .text-area:focused {
     -fx-background-color: white; -fx-border-color: #1F6DB5;
 }
-.radio-button { -fx-text-fill: #13263A; }
-.radio-button .radio { -fx-background-color: #9AA5B1, white; -fx-background-insets: 0, 1.5; }
-.radio-button:selected .dot { -fx-background-color: #0F3557; }
+.radio-button { -fx-text-fill: #13263A; -fx-font-size: 14px; }
+.radio-button .radio {
+    -fx-background-color: #9AA5B1, white;
+    -fx-background-insets: 0, 1.5;
+    -fx-background-radius: 20;
+    -fx-padding: 5;
+}
+.radio-button:selected .radio { -fx-background-color: #1F6DB5, white; }
+.radio-button .dot { -fx-background-color: transparent; -fx-background-radius: 20; -fx-padding: 4; }
+.radio-button:selected .dot { -fx-background-color: #1F6DB5; }
+.radio-button:hover .radio { -fx-background-color: #1F6DB5, white; }
