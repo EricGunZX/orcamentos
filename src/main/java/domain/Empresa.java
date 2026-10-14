@@ -49,8 +49,8 @@ public class Empresa implements Serializable {
     public void setDesignacao(String v) { this.designacao = Validacao.textoObrigatorio(v, "Designação"); }
     public void setNif(String v) { this.nif = Validacao.nif(v); }
     public void setMorada(String v) { this.morada = Validacao.textoObrigatorio(v, "Morada"); }
-    public void setTelefone(String v) { this.telefone = v; }
-    public void setEmail(String v) { this.email = v; }
+    public void setTelefone(String v) { this.telefone = Validacao.telefoneOpcional(v); }
+    public void setEmail(String v) { this.email = Validacao.emailOpcional(v); }
     public void setWebsite(String v) { this.website = v; }
     public void setCaminhoLogotipo(String v) { this.caminhoLogotipo = v; }
 

@@ -17,8 +17,8 @@ public abstract class Cliente implements Serializable {
         setNome(nome);
         setNif(nif);
         setMorada(morada);
-        this.telefone = telefone;
-        this.email = email;
+        setTelefone(telefone);
+        setEmail(email);
     }
 
     /** Texto do tipo de cliente. */
@@ -67,7 +67,7 @@ public abstract class Cliente implements Serializable {
     }
 
     public void setTelefone(String telefone) {
-        this.telefone = telefone;
+        this.telefone = Validacao.telefoneOpcional(telefone);
     }
 
     public String getEmail() {
@@ -75,7 +75,7 @@ public abstract class Cliente implements Serializable {
     }
 
     public void setEmail(String email) {
-        this.email = email;
+        this.email = Validacao.emailOpcional(email);
     }
 
     @Override

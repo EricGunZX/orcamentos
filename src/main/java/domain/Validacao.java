@@ -19,7 +19,42 @@ public final class Validacao {
         if (!limpo.matches("\\d{9}")) {
             throw new IllegalArgumentException("O NIF deve ter 9 dígitos.");
         }
+        int soma = 0;
+        for (int i = 0; i < 8; i++) {
+            soma += (limpo.charAt(i) - '0') * (9 - i);
+        }
+        int controlo = 11 - (soma % 11);
+        if (controlo >= 10) {
+            controlo = 0;
+        }
+        if (controlo != limpo.charAt(8) - '0') {
+            throw new IllegalArgumentException("O NIF é inválido (o dígito de controlo não confere).");
+        }
         return limpo;
+    }
+
+    /** E-mail opcional: se preenchido, tem de ter formato válido. */
+    public static String emailOpcional(String valor) {
+        if (valor == null || valor.isBlank()) {
+            return valor;
+        }
+        String v = valor.trim();
+        if (!v.matches("[^@\\s]+@[^@\\s]+\\.[^@\\s]{2,}")) {
+            throw new IllegalArgumentException("O e-mail é inválido.");
+        }
+        return v;
+    }
+
+    /** Telefone opcional: 9 a 15 dígitos, aceitando espaços e um + inicial. */
+    public static String telefoneOpcional(String valor) {
+        if (valor == null || valor.isBlank()) {
+            return valor;
+        }
+        String v = valor.trim();
+        if (!v.replace(" ", "").matches("\\+?\\d{9,15}")) {
+            throw new IllegalArgumentException("O telefone é inválido (9 a 15 dígitos).");
+        }
+        return v;
     }
 
     /**
