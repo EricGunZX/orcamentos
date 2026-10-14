@@ -20,20 +20,20 @@ guardados (serialização de objetos) em `~/NumerosProficuos/dados.ser`.
 
 ## Gerar o executável para entregar ao cliente
 
-O resultado é uma pasta com `Orcamentos.exe` e o Java **já incluído**: o cliente não precisa de
+O resultado é uma pasta com `NumerosProficuos.exe` e o Java **já incluído**: o cliente não precisa de
 instalar nada. O executável tem de ser gerado no sistema onde vai correr (um `.exe` faz-se em Windows).
 
 **Opção 1: no teu Windows** (precisa de JDK 17+ e Maven no PATH)
 
 1. Faz duplo clique em `build-windows.bat`.
-2. No fim aparece `dist\Orcamentos\`. Comprime essa pasta em ZIP e entrega.
-3. O cliente descomprime e abre `Orcamentos.exe`.
+2. No fim aparece `dist\NumerosProficuos\`. Comprime essa pasta em ZIP e entrega.
+3. O cliente descomprime e abre `NumerosProficuos.exe`.
 
 **Opção 2: no GitHub (Windows, macOS e Linux de uma vez)**
 
 1. Faz push do projeto para um repositório GitHub.
 2. Abre o separador *Actions*, escolhe *Gerar aplicação executável* e espera pelo fim.
-3. Descarrega o ZIP `Orcamentos-Windows` na secção *Artifacts*.
+3. Descarrega o ZIP `NumerosProficuos-Windows` na secção *Artifacts*.
 
 **Linux / macOS:** `./build-linux-mac.sh` (resultado em `dist/`).
 

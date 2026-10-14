@@ -29,7 +29,7 @@ jobs:
         if: runner.os == 'Windows'
         shell: cmd
         run: >
-          jpackage --type app-image --name Orcamentos --app-version 1.0
+          jpackage --type app-image --name NumerosProficuos --app-version 1.0
           --input target\jpackage --main-jar orcamentos.jar --main-class Main
           --icon packaging\icone.ico
           --add-modules java.base,java.desktop,java.logging,java.xml,java.prefs,jdk.unsupported
@@ -41,7 +41,7 @@ jobs:
         run: |
           ICONE=()
           if [[ "$RUNNER_OS" == "Linux" ]]; then ICONE=(--icon packaging/icone.png); fi
-          jpackage --type app-image --name Orcamentos --app-version 1.0 \
+          jpackage --type app-image --name NumerosProficuos --app-version 1.0 \
             --input target/jpackage --main-jar orcamentos.jar --main-class Main \
             "${ICONE[@]}" \
             --add-modules java.base,java.desktop,java.logging,java.xml,java.prefs,jdk.unsupported \
@@ -49,5 +49,5 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: Orcamentos-${{ runner.os }}
+          name: NumerosProficuos-${{ runner.os }}
           path: dist

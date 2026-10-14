@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Gera a aplicação executável para Linux ou macOS (com o Java incluído).
-# Requisitos: JDK 17+ e Maven no PATH.  Resultado: dist/Orcamentos
+# Requisitos: JDK 17+ e Maven no PATH.  Resultado: dist/NumerosProficuos
 set -euo pipefail
 cd "$(dirname "$0")"
 
@@ -13,7 +13,7 @@ ICONE=()
 if [[ "$(uname)" == "Linux" ]]; then ICONE=(--icon packaging/icone.png); fi
 
 jpackage --type app-image \
-  --name Orcamentos \
+  --name NumerosProficuos \
   --app-version 1.0 \
   --vendor "Numeros Proficuos" \
   --input target/jpackage \
@@ -24,4 +24,4 @@ jpackage --type app-image \
   --java-options "-Dfile.encoding=UTF-8" \
   --dest dist
 
-echo "[3/3] Concluído: dist/ (Linux: dist/Orcamentos/bin/Orcamentos | macOS: dist/Orcamentos.app)"
+echo "[3/3] Concluído: dist/ (Linux: dist/NumerosProficuos/bin/NumerosProficuos | macOS: dist/NumerosProficuos.app)"

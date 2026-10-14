@@ -2,7 +2,7 @@
 REM ============================================================
 REM  Gera a aplicacao executavel para Windows (com o Java incluido).
 REM  Requisitos nesta maquina: JDK 17 ou superior e Maven no PATH.
-REM  Resultado: dist\Orcamentos\Orcamentos.exe  (pasta pronta a entregar)
+REM  Resultado: dist\NumerosProficuos\NumerosProficuos.exe  (pasta pronta a entregar)
 REM ============================================================
 setlocal
 cd /d "%~dp0"
@@ -14,7 +14,7 @@ if errorlevel 1 goto erro
 echo [2/3] A criar a aplicacao com o Java incluido...
 if exist dist rmdir /s /q dist
 jpackage --type app-image ^
-  --name Orcamentos ^
+  --name NumerosProficuos ^
   --app-version 1.0 ^
   --vendor "Numeros Proficuos" ^
   --input target\jpackage ^
@@ -28,8 +28,8 @@ if errorlevel 1 goto erro
 
 echo [3/3] Concluido.
 echo.
-echo A pasta dist\Orcamentos esta pronta. Para entregar, comprima-a em ZIP.
-echo O cliente so tem de abrir Orcamentos.exe (nao precisa de instalar o Java).
+echo A pasta dist\NumerosProficuos esta pronta. Para entregar, comprima-a em ZIP.
+echo O cliente so tem de abrir NumerosProficuos.exe (nao precisa de instalar o Java).
 pause
 exit /b 0
 
