@@ -38,6 +38,7 @@ public class GeradorWord {
     private static final int W = 11040;                       // largura total (dxa)
     private static final int ESQ = 4560;                      // coluna da esquerda do cabeçalho
     private static final int DIR = W - ESQ;                   // coluna da direita
+    private static final int DIRN = DIR - 80;                 // tabelas encaixadas (folga para a borda direita)
     private static final int[] COLS = {700, 6060, 740, 1480, 2060};
     private static final int LINHA = 500;                     // altura mínima de uma linha da tabela
     private static final int LINHAS_PAG1 = 16;                // linhas livres da 1.ª página (modelo em branco)
@@ -67,6 +68,7 @@ public class GeradorWord {
             entrada(zip, "word/document.xml", documento);
             entrada(zip, "word/footer1.xml", rodape);
             entrada(zip, "word/styles.xml", ESTILOS);
+            entrada(zip, "word/settings.xml", SETTINGS);
             entrada(zip, "word/_rels/document.xml.rels", DOC_RELS);
             if (logo != null) {
                 zip.putNextEntry(new ZipEntry("word/media/logo.png"));
@@ -284,14 +286,14 @@ public class GeradorWord {
     }
 
     private String tabelaOrcamento() {
-        int c1 = 1640, c2 = 2280, c3 = 2560;
+        int c1 = 1610, c2 = 2250, c3 = 2540;
         String titulo = "ORÇAMENTO";
         if (o != null && o.getEstado() == EstadoOrcamento.ANULADO) {
             titulo += " (ANULADO)";
         }
         String todas = bordas(true, true, true, true);
         StringBuilder rows = new StringBuilder();
-        rows.append(linha(celula(DIR, 3, todas, AZUL, "center", 100,
+        rows.append(linha(celula(DIRN, 3, todas, AZUL, "center", 100,
                 par(run(espacado(titulo), 28, true, "FFFFFF", null, 70), "center", 0, 0)), 600, false, false));
         String[] cab = {"Nº Orçamento", "Data", "Código cliente"};
         int[] lg = {c1, c2, c3};
@@ -309,13 +311,13 @@ public class GeradorWord {
         }
         rows.append(linha(r2.toString(), 480, false, false));
         rows.append(linha(r3.toString(), 680, false, false));
-        return tabela(DIR, new int[]{c1, c2, c3}, rows.toString());
+        return tabela(DIRN, new int[]{c1, c2, c3}, rows.toString());
     }
 
     private String tabelaCliente() {
         String todas = bordas(true, true, true, true);
         StringBuilder rows = new StringBuilder();
-        rows.append(linha(celula(DIR, 1, todas, AZUL, "center", 100,
+        rows.append(linha(celula(DIRN, 1, todas, AZUL, "center", 100,
                 par(run(espacado("CLIENTE"), 28, true, "FFFFFF", null, 70), "center", 0, 0)), 600, false, false));
         StringBuilder conteudo = new StringBuilder();
         if (o != null) {
@@ -328,8 +330,8 @@ public class GeradorWord {
                 conteudo.append(par(run(m, 22, false), "left", 60, 0));
             }
         }
-        rows.append(linha(celula(DIR, 1, todas, null, "top", 140, conteudo.toString()), 1600, false, false));
-        return tabela(DIR, new int[]{DIR}, rows.toString());
+        rows.append(linha(celula(DIRN, 1, todas, null, "top", 140, conteudo.toString()), 1600, false, false));
+        return tabela(DIRN, new int[]{DIRN}, rows.toString());
     }
 
     // ------------------------------------------------------------------ tabela de detalhes
@@ -559,6 +561,7 @@ public class GeradorWord {
             + "<Default Extension=\"png\" ContentType=\"image/png\"/>"
             + "<Override PartName=\"/word/document.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml\"/>"
             + "<Override PartName=\"/word/styles.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml\"/>"
+            + "<Override PartName=\"/word/settings.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml\"/>"
             + "<Override PartName=\"/word/footer1.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml\"/>"
             + "</Types>";
 
@@ -570,9 +573,15 @@ public class GeradorWord {
     private static final String DOC_RELS = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"
             + "<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">"
             + "<Relationship Id=\"rIdStyles\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles\" Target=\"styles.xml\"/>"
+            + "<Relationship Id=\"rIdSettings\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings\" Target=\"settings.xml\"/>"
             + "<Relationship Id=\"rIdFooter\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/footer\" Target=\"footer1.xml\"/>"
             + "<Relationship Id=\"rIdLogo\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image\" Target=\"media/logo.png\"/>"
             + "</Relationships>";
+
+    private static final String SETTINGS = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"
+            + "<w:settings xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\">"
+            + "<w:hideSpellingErrors/><w:hideGrammaticalErrors/>"
+            + "<w:defaultTabStop w:val=\"708\"/></w:settings>";
 
     private static final String ESTILOS = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"
             + "<w:styles xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\">"

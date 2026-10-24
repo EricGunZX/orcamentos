@@ -55,7 +55,7 @@ public class OrcamentoView extends BorderPane {
     private static final double LARG_DESC = 350;
     // idx | sep | descrição | sep | qtd | un | sep | preço | sep | total
     private static final double[] LARG = {36, 1, LARG_DESC, 1, 46, 66, 1, 96, 1, 108};
-    private static final double LARG_TAB = 706;
+    private static final double LARG_TAB = 708;   // 706 de colunas + 2 de bordas
     private static final String AZUL_ESCURO = "#174073";
     private static final String[] IVAS = {"IVA não incluído", "IVA 23%", "IVA 13%", "IVA 6%"};
 
@@ -618,7 +618,7 @@ public class OrcamentoView extends BorderPane {
 
     private static Region separador() {
         Region r = new Region();
-        r.setStyle("-fx-background-color: black;");
+        r.setStyle("-fx-border-color: black; -fx-border-width: 0 0 0 1;");
         return r;
     }
 
