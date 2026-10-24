@@ -124,11 +124,62 @@ public class OrcamentoView extends BorderPane {
         atualizarTotais();
     }
 
+    /** Linha ainda por completar (não está no orçamento): guarda-se para não desaparecer ao reconstruir. */
+    private static final class Resto {
+        int pos;
+        String desc;
+        String qtd;
+        String preco;
+        UnidadeMedida un;
+    }
+
+    private List<Object[]> restauro;   // por bloco: {nº de linhas, List<Resto>}
+    private int blocoIdx;
+
     private void reconstruir() {
+        reconstruir(true);
+    }
+
+    private void reconstruir(boolean preservarLinhas) {
         double posicao = rolagem.getVvalue();
+        restauro = preservarLinhas ? capturarRascunhos() : null;
+        blocoIdx = 0;
         setTop(barraFerramentas());
         construir();
+        restauro = null;
         Platform.runLater(() -> rolagem.setVvalue(posicao));
+    }
+
+    /** Guarda as linhas escritas mas ainda sem preço (ou só com a descrição) e o nº de linhas de cada bloco. */
+    private List<Object[]> capturarRascunhos() {
+        List<Object[]> r = new ArrayList<>();
+        for (Node b : blocos.getChildren()) {
+            if (!(b.getUserData() instanceof Bloco)) {
+                continue;
+            }
+            Bloco bl = (Bloco) b.getUserData();
+            List<Resto> restos = new ArrayList<>();
+            int pos = 0;
+            for (Node f : bl.corpo.getChildren()) {
+                if (f.getUserData() instanceof Linha) {
+                    Linha l = (Linha) f.getUserData();
+                    boolean escrita = !l.desc.getText().isBlank() || !l.qtd.getText().isBlank()
+                            || !l.preco.getText().isBlank();
+                    if (l.modelo == null && escrita) {
+                        Resto x = new Resto();
+                        x.pos = pos;
+                        x.desc = l.desc.getText();
+                        x.qtd = l.qtd.getText();
+                        x.preco = l.preco.getText();
+                        x.un = l.un.getValue();
+                        restos.add(x);
+                    }
+                }
+                pos++;
+            }
+            r.add(new Object[]{bl.corpo.getChildren().size(), restos});
+        }
+        return r;
     }
 
     private void gravarPendentes() {
@@ -700,7 +751,7 @@ public class OrcamentoView extends BorderPane {
                         try {
                             gravarPendentes();
                             ctx.orcamentos.removerCapitulo(orc, cap);
-                            reconstruir();
+                            reconstruir(false);
                         } catch (RuntimeException ex) {
                             Ui.erro(janela(), Ui.mensagem(ex));
                         }
@@ -748,6 +799,26 @@ public class OrcamentoView extends BorderPane {
                     acrescentarLinha(l);
                 }
             }
+            if (restauro != null && blocoIdx < restauro.size()) {
+                Object[] e = restauro.get(blocoIdx);
+                @SuppressWarnings("unchecked")
+                List<Resto> restos = (List<Resto>) e[1];
+                for (Resto x : restos) {
+                    Linha l = new Linha(this, null);
+                    linhas.add(l);
+                    corpo.getChildren().add(Math.min(x.pos, corpo.getChildren().size()), l.fila);
+                    l.desc.setText(x.desc);
+                    l.qtd.setText(x.qtd);
+                    l.preco.setText(x.preco);
+                    if (x.un != null) {
+                        l.un.setValue(x.un);
+                    }
+                }
+                while (corpo.getChildren().size() < (Integer) e[0]) {
+                    acrescentarLinha(null, false);
+                }
+            }
+            blocoIdx++;
             if (editavel() && cap == null) {
                 while (corpo.getChildren().size() < 6) { // modelo com linhas vazias prontas a preencher
                     acrescentarLinha(null, false);
