@@ -1,0 +1,53 @@
+name: Gerar aplicação executável
+
+# Faz o build em Windows, macOS e Linux sempre que se faz push (ou manualmente, em Actions > Run workflow).
+# No fim, descarregue o ZIP de cada sistema na página da execução ("Artifacts").
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Compilar
+        run: mvn -B clean package -DskipTests
+
+      - name: Criar aplicação (Windows)
+        if: runner.os == 'Windows'
+        shell: cmd
+        run: >
+          jpackage --type app-image --name NumerosProficuos --app-version 1.0
+          --input target\jpackage --main-jar orcamentos.jar --main-class Main
+          --icon packaging\icone.ico
+          --add-modules java.base,java.desktop,java.logging,java.xml,java.prefs,jdk.unsupported
+          --java-options "-Dfile.encoding=UTF-8" --dest dist
+
+      - name: Criar aplicação (macOS / Linux)
+        if: runner.os != 'Windows'
+        shell: bash
+        run: |
+          ICONE=()
+          if [[ "$RUNNER_OS" == "Linux" ]]; then ICONE=(--icon packaging/icone.png); fi
+          jpackage --type app-image --name NumerosProficuos --app-version 1.0 \
+            --input target/jpackage --main-jar orcamentos.jar --main-class Main \
+            "${ICONE[@]}" \
+            --add-modules java.base,java.desktop,java.logging,java.xml,java.prefs,jdk.unsupported \
+            --java-options "-Dfile.encoding=UTF-8" --dest dist
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: NumerosProficuos-${{ runner.os }}
+          path: dist
