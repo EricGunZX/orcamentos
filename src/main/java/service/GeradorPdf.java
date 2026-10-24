@@ -454,10 +454,13 @@ public class GeradorPdf {
                 String parte = q.get(k);
                 float base = Y(t + 9f);
                 float x = X[1] + 8f;
-                if (k == 0 && parte.startsWith(rotulo)) {
-                    texto(NEGRITO, TAM, x, base, rotulo);
-                    texto(tudoNegrito ? NEGRITO : NORMAL, TAM, x + largura(NEGRITO, TAM, rotulo), base,
-                            parte.substring(rotulo.length()));
+                if (k == 0 && parte.startsWith(rotulo.trim())) {
+                    String rot = parte.startsWith(rotulo) ? rotulo : rotulo.trim();
+                    texto(NEGRITO, TAM, x, base, rot);
+                    if (parte.length() > rot.length()) {
+                        texto(tudoNegrito ? NEGRITO : NORMAL, TAM, x + largura(NEGRITO, TAM, rot), base,
+                                parte.substring(rot.length()));
+                    }
                 } else {
                     texto(NORMAL, TAM, x, base, parte);
                 }

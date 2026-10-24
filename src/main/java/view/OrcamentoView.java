@@ -102,7 +102,30 @@ public class OrcamentoView extends BorderPane {
         setTop(barraFerramentas());
         setCenter(rolagem);
         construir();
+
+        // ao fechar a janela, o que ainda está a ser escrito fica guardado
+        sceneProperty().addListener((o, antiga, nova) -> {
+            if (antiga != null && antiga.getWindow() != null) {
+                antiga.getWindow().removeEventHandler(javafx.stage.WindowEvent.WINDOW_HIDING, aoFechar);
+            }
+            if (nova != null) {
+                Runnable ligar = () -> {
+                    if (nova.getWindow() != null) {
+                        nova.getWindow().removeEventHandler(javafx.stage.WindowEvent.WINDOW_HIDING, aoFechar);
+                        nova.getWindow().addEventHandler(javafx.stage.WindowEvent.WINDOW_HIDING, aoFechar);
+                    }
+                };
+                ligar.run();
+                nova.windowProperty().addListener((w, wa, wn) -> ligar.run());
+            }
+        });
     }
+
+    private final javafx.event.EventHandler<javafx.stage.WindowEvent> aoFechar = e -> {
+        if (getScene() != null && editavel()) {
+            gravarPendentes();
+        }
+    };
 
     // ================================================================= estrutura
 
@@ -895,6 +918,8 @@ public class OrcamentoView extends BorderPane {
         final ComboBox<UnidadeMedida> un = new ComboBox<>(FXCollections.observableArrayList(UnidadeMedida.values()));
         final TextField preco = new TextField();
         final Label total = new Label();
+        private Runnable gravarPendente;
+        private boolean removida;
 
         Linha(Bloco bloco, LinhaOrcamento modelo) {
             this.bloco = bloco;
@@ -959,6 +984,7 @@ public class OrcamentoView extends BorderPane {
             un.setDisable(!editavel());
 
             Runnable gravar = this::gravar;
+            gravarPendente = gravar;
             pendentes.add(gravar);
             for (javafx.scene.Node n : new javafx.scene.Node[]{desc, qtd, preco}) {
                 n.focusedProperty().addListener((o, a, f) -> {
@@ -1013,8 +1039,19 @@ public class OrcamentoView extends BorderPane {
             desc.setMaxHeight(h);
         }
 
+        /** Linha já guardada que ficou incompleta: volta ao último valor válido (para não contradizer os totais). */
+        private void repor() {
+            desc.setText(modelo.getDescricao());
+            qtd.setText(Ui.semZeros(modelo.getQuantidade()).replace('.', ','));
+            preco.setText(Dinheiro.formatar(modelo.getPrecoUnitario()));
+            un.setValue(modelo.getUnidade());
+            total.setText(Dinheiro.formatar(modelo.getTotal()));
+            assinalar(false);
+            recalcularAoVivo();
+        }
+
         void gravar() {
-            if (!editavel()) {
+            if (!editavel() || removida) {
                 return;
             }
             String d = desc.getText() == null ? "" : desc.getText().trim();
@@ -1025,10 +1062,18 @@ public class OrcamentoView extends BorderPane {
                 p = preco.getText() == null || preco.getText().isBlank() ? null
                         : Ui.paraDecimal(preco.getText().replace("€", "").trim());
             } catch (NumberFormatException ex) {
-                assinalar(true);
+                if (modelo != null) {
+                    repor();
+                } else {
+                    assinalar(true);
+                }
                 return;
             }
             boolean completo = !d.isEmpty() && p != null && p.signum() > 0 && q != null && q.signum() > 0;
+            if (!completo && modelo != null) {
+                repor();
+                return;
+            }
             if (!completo) {
                 // linha ainda por preencher: não conta para o orçamento
                 assinalar(modelo != null || !d.isEmpty() || p != null);
@@ -1071,6 +1116,8 @@ public class OrcamentoView extends BorderPane {
                 Ui.erro(janela(), Ui.mensagem(ex));
                 return;
             }
+            removida = true;
+            pendentes.remove(gravarPendente);
             bloco.removida(this);
             atualizarTotais();
         }
